@@ -1,48 +1,69 @@
-<template>
-  <div class="login-page">
-    <div class="login-card shadow-lg">
-      <div class="card-row">
-        <!-- Left Panel -->
-        <div class="left-panel">
-          <div class="left-inner">
-            <h2>Patient Login</h2>
-            <ul class="features-list">
-              <li><i class="fas fa-check-circle me-2"></i>Anytime, Anywhere, Any Device</li>
-              <li><i class="fas fa-check-circle me-2"></i>Go Paperless</li>
-              <li><i class="fas fa-check-circle me-2"></i>Secure Backup</li>
-              <li><i class="fas fa-check-circle me-2"></i>Multi Location Support</li>
-              <li><i class="fas fa-check-circle me-2"></i>Quick Insight On Key Performance</li>
-            </ul>
-          </div>
+﻿<template>
+  <div>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white px-4 py-3 shadow-sm">
+      <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-success" href="#">TryggHelse</a>
+        <div class="collapse navbar-collapse justify-content-end">
+          <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="#">Products</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Resources</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Company</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Login</a></li>
+            <li class="nav-item">
+              <a class="btn btn-success ms-3 px-3 py-2" href="#">Book a Demo</a>
+            </li>
+          </ul>
         </div>
+      </div>
+    </nav>
 
-        <!-- Right Panel -->
-        <div class="right-panel">
-          <div class="right-inner">
-            <h3 class="title">Sign In</h3>
-            <form @submit.prevent="handleLogin">
-              <div class="form-group">
-                <label class="form-label">Email or User Id</label>
-                <input type="text" v-model="email" class="form-control" placeholder="Email or User Id" required />
-              </div>
+    <!-- Login Page -->
+    <div class="login-page">
+      <div class="login-card shadow-lg">
+        <div class="card-row">
+          <!-- Left Panel -->
+          <div class="left-panel">
+            <div class="left-inner">
+              <h2>Patient Login</h2>
+              <ul class="features-list">
+                <li><i class="fas fa-check-circle me-2"></i>Anytime, Anywhere, Any Device</li>
+                <li><i class="fas fa-check-circle me-2"></i>Go Paperless</li>
+                <li><i class="fas fa-check-circle me-2"></i>Secure Backup</li>
+                <li><i class="fas fa-check-circle me-2"></i>Multi Location Support</li>
+                <li><i class="fas fa-check-circle me-2"></i>Quick Insight On Key Performance</li>
+              </ul>
+            </div>
+          </div>
 
-              <div class="form-group">
-                <label class="form-label">Password</label>
-                <div class="password-row">
-                  <input :type="showPassword ? 'text' : 'password'" v-model="password" class="form-control" placeholder="Password" required />
-                  <button type="button" class="show-btn" @click="showPassword = !showPassword">{{ showPassword ? 'Hide' : 'Show' }}</button>
+          <!-- Right Panel -->
+          <div class="right-panel">
+            <div class="right-inner">
+              <h3 class="title">Sign In</h3>
+              <form @submit.prevent="handleLogin">
+                <div class="form-group">
+                  <label class="form-label">Email or User Id</label>
+                  <input type="text" v-model="email" class="form-control" placeholder="Email or User Id" required />
                 </div>
-              </div>
 
-              <div class="d-flex justify-content-end mb-3">
-                <a href="#" class="forgot">Forgot Password?</a>
-              </div>
+                <div class="form-group">
+                  <label class="form-label">Password</label>
+                  <div class="password-row">
+                    <input :type="showPassword ? 'text' : 'password'" v-model="password" class="form-control" placeholder="Password" required />
+                    <button type="button" class="show-btn" @click="showPassword = !showPassword">{{ showPassword ? 'Hide' : 'Show' }}</button>
+                  </div>
+                </div>
 
-              <button type="submit" class="btn login-btn w-100" :disabled="loading">{{ loading ? 'Logging in...' : 'Login' }}</button>
+                <div class="d-flex justify-content-end mb-3">
+                  <a href="#" class="forgot">Forgot Password?</a>
+                </div>
 
-              <div v-if="error" class="alert alert-danger mt-3">{{ error }}</div>
-              <div v-if="success" class="alert alert-success mt-3">Login successful! Redirecting...</div>
-            </form>
+                <button type="submit" class="btn login-btn w-100" :disabled="loading">{{ loading ? 'Logging in...' : 'Login' }}</button>
+
+                <div v-if="error" class="alert alert-danger mt-3">{{ error }}</div>
+                <div v-if="success" class="alert alert-success mt-3">Login successful! Redirecting...</div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
@@ -108,6 +129,25 @@ export default {
 </script>
 
 <style scoped>
+.navbar-brand {
+  font-size: 24px;
+}
+
+.nav-link {
+  font-weight: 500;
+  color: #333 !important;
+  margin-right: 15px;
+}
+
+.nav-link:hover {
+  color: #0aa64a !important;
+}
+
+.btn-success {
+  font-weight: 600;
+  border-radius: 6px;
+}
+
 .login-page {
   min-height: 100vh;
   display: flex;
@@ -246,21 +286,11 @@ export default {
 }
 
 @media (max-width: 767px) {
-  .card-row {
-    flex-direction: column;
-  }
-  .left-panel {
-    flex: none;
-    padding: 20px;
-  }
-  .left-inner {
-    padding: 20px;
-  }
-  .right-inner {
-    padding: 20px;
-  }
-  .card-row {
-    min-height: auto;
-  }
+  .card-row { flex-direction: column; }
+  .left-panel { flex: none; padding: 20px; }
+  .left-inner { padding: 20px; }
+  .right-inner { padding: 20px; }
+  .card-row { min-height: auto; }
 }
 </style>
+
