@@ -1,23 +1,20 @@
 ﻿<template>
   <div>
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white px-4 py-3 shadow-sm">
-      <div class="container-fluid">
-        <a class="navbar-brand fw-bold text-success" href="#">TryggHelse</a>
-        <div class="collapse navbar-collapse justify-content-end">
-          <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link" href="#">Products</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Resources</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Company</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Login</a></li>
-            <li class="nav-item">
-              <a class="btn btn-success ms-3 px-3 py-2" href="#">Book a Demo</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
+    
+    <nav class="navbar navbar-expand-lg bg-white shadow-sm px-5 py-3">
+  <div class="container-fluid">
+    <a class="navbar-brand text-success fw-bold fs-4" href="#">TryggHelse</a>
+    <ul class="navbar-nav ms-auto d-flex align-items-center gap-4">
+      <li class="nav-item"><a class="nav-link text-dark fw-medium" href="#">Products</a></li>
+      <li class="nav-item"><a class="nav-link text-dark fw-medium" href="#">Resources</a></li>
+      <li class="nav-item"><a class="nav-link text-dark fw-medium" href="#">Company</a></li>
+      <li class="nav-item"><a class="nav-link text-dark fw-medium" href="#">Login</a></li>
+      <li class="nav-item">
+        <a class="btn btn-success px-4 py-2 fw-semibold rounded-pill" href="#">Book a Demo</a>
+      </li>
+    </ul>
+  </div>
+</nav>
     <!-- Login Page -->
     <div class="login-page">
       <div class="login-card shadow-lg">
@@ -27,11 +24,11 @@
             <div class="left-inner">
               <h2>Patient Login</h2>
               <ul class="features-list">
-                <li><i class="fas fa-check-circle me-2"></i>Anytime, Anywhere, Any Device</li>
-                <li><i class="fas fa-check-circle me-2"></i>Go Paperless</li>
-                <li><i class="fas fa-check-circle me-2"></i>Secure Backup</li>
-                <li><i class="fas fa-check-circle me-2"></i>Multi Location Support</li>
-                <li><i class="fas fa-check-circle me-2"></i>Quick Insight On Key Performance</li>
+                <li>Anytime, Anywhere, Any Device</li>
+                <li>Go Paperless</li>
+                <li>Secure Backup</li>
+                <li>Multi Location Support</li>
+                <li>Quick Insight On Key Performance</li>
               </ul>
             </div>
           </div>
@@ -129,8 +126,61 @@ export default {
 </script>
 
 <style scoped>
+
+.navbar {
+  border-bottom: 1px solid #eee;
+}
+
+.navbar-nav .nav-link {
+  font-size: 15px;
+  transition: color 0.2s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #0aa64a !important;
+}
+
+.btn-success {
+  background-color: #0aa64a;
+  border: none;
+  font-size: 14px;
+}
+
+.btn-success:hover {
+  background-color: #089e45;
+}
+
+
 .navbar-brand {
   font-size: 24px;
+}
+
+.navbar {
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+}
+
+.navbar-nav {
+  display: flex;
+  gap: 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  align-items: center;
+}
+
+.navbar-nav .nav-item { list-style: none; }
+
+.btn-book {
+  background: #0aa64a;
+  color: #fff;
+  border-radius: 20px;
+  padding: 8px 14px;
+  font-weight: 600;
+  text-decoration: none;
 }
 
 .nav-link {
@@ -202,12 +252,18 @@ export default {
   align-items: center;
 }
 
-.features-list li i {
-  color: #fff;
-  background: rgba(255,255,255,0.15);
+.features-list li::before {
+  content: "\2713";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-right: 12px;
   border-radius: 50%;
-  padding: 6px;
-  margin-right: 10px;
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  font-weight: 800;
 }
 
 .right-panel {
@@ -226,7 +282,7 @@ export default {
 
 .title {
   text-align: center;
-  font-size: 26px;
+  font-size: 34px;
   margin-bottom: 20px;
   color: #222;
 }
@@ -240,7 +296,7 @@ export default {
   width: 100%;
   padding: 12px 14px;
   border-radius: 8px;
-  border: none;
+  border: 1px solid #e8e8e8;
   margin-top: 8px;
   background: #f5f6f7;
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
@@ -274,11 +330,11 @@ export default {
   background: linear-gradient(180deg,#ff8a00,#f58220);
   border: none;
   color: white;
-  padding: 12px 18px;
-  border-radius: 28px;
+  padding: 14px 18px;
+  border-radius: 26px;
   font-weight: 800;
   font-size: 16px;
-  box-shadow: 0 6px 18px rgba(245,130,32,0.28);
+  box-shadow: 0 8px 26px rgba(245,130,32,0.28);
 }
 
 .alert {
