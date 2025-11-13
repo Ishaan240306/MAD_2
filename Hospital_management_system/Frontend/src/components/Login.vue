@@ -1,42 +1,46 @@
 <template>
-  <div class="login-container">
-    <h2>Hospital Management System - Login</h2>
-    
-    <form @submit.prevent="handleLogin">
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input 
-          v-model="email" 
-          type="email" 
-          id="email" 
-          required
-          placeholder="Enter your email"
-        />
-      </div>
+  <div class="login-page">
+    <div class="login-left">
+      <h2>Patient Login</h2>
+      <ul class="features">
+        <li>✅ Anytime, Anywhere, Any Device</li>
+        <li>📄 Go Paperless</li>
+        <li>🔐 Secure Backup</li>
+        <li>🌍 Multi Location Support</li>
+        <li>📊 Quick Insight On Key Performance</li>
+      </ul>
+    </div>
 
-      <div class="form-group">
-        <label for="password">Password:</label>
-        <input 
-          v-model="password" 
-          type="password" 
-          id="password" 
-          required
-          placeholder="Enter your password"
-        />
-      </div>
+    <div class="login-right">
+      <h2>Sign In</h2>
+      <form @submit.prevent="handleLogin">
+        <div class="form-group">
+          <label for="email">Email or User ID</label>
+          <input v-model="email" type="email" id="email" required placeholder="Enter your email" />
+        </div>
 
-      <button type="submit" :disabled="loading">
-        {{ loading ? 'Logging in...' : 'Login' }}
-      </button>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input v-model="password" type="password" id="password" required placeholder="Enter your password" />
+        </div>
 
-      <div v-if="error" class="error-message">
-        {{ error }}
-      </div>
+        <div class="form-group">
+          <input type="checkbox" id="showPassword" @change="togglePassword" />
+          <label for="showPassword">Show Password</label>
+        </div>
 
-      <div v-if="success" class="success-message">
-        Login successful! Redirecting...
-      </div>
-    </form>
+        <div class="form-group">
+          <a href="#" class="forgot-link">Forgot Password?</a>
+        </div>
+
+        <button type="submit" :disabled="loading">
+          {{ loading ? 'Logging in...' : 'Login' }}
+        </button>
+
+        <div v-if="error" class="error-message">{{ error }}</div>
+        <div v-if="success" class="success-message">Login successful! Redirecting...</div>
+      </form>
+    </div>
   </div>
 </template>
 
