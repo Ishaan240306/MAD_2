@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { getUserRole } from '../utils/tokenManager';
 
+
+
 const routes = [
   {
     path: '/',
@@ -26,6 +28,27 @@ const routes = [
     }
   },
   {
+    path: '/doctor',
+    name: 'DoctorDashboard',
+    component: () => import('../components/DoctorDashboard.vue'),
+    meta: {
+      title: 'Hospital Management - Doctor Dashboard',
+      requiresAuth: true,
+      requiredRole: 'Doctor'
+    }
+  },
+  {
+    path: '/patient',
+    name: 'PatientDashboard',
+    component: () => import('../components/PatientDashboard.vue'),
+    meta: {
+      title: 'Hospital Management - Patient Dashboard',
+      requiresAuth: true,
+      requiredRole: 'Patient'
+    }
+  },
+
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/login'
   }
@@ -39,7 +62,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.meta.requiresAuth;
   const requiredRole = to.meta.requiredRole;
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('access_token');
   const userRole = getUserRole();
 
   if (to.meta.title) {
@@ -59,9 +82,13 @@ router.beforeEach((to, from, next) => {
       const role = getUserRole();
       if (role === 'Admin') {
         next('/admin');
+      } else if (role === 'Doctor') {
+        next('/doctor');
+      } else if (role === 'Patient') {
+        next('/patient');
       } else {
         next('/login');
-      }
+    }
     } else {
       next();
     }

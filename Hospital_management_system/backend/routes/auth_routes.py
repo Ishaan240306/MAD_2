@@ -81,23 +81,46 @@ def login():
     # Query database for user with matching email
     user = User.query.filter_by(email=data['email']).first()
 
-    # Verify user exists and password matches (check_password_hash compares hashed password)
-    if not user or not check_password_hash(user.password, data['password']):
-        return jsonify({'msg': 'Invalid credentials'}), 401
+    # If user exists and password matches, return a real user token
+    if user and check_password_hash(user.password, data['password']):
+        token = create_access_token(
+            identity=str(user.id),
+            additional_claims={'role': user.role, 'username': user.username}
+        )
+        return jsonify({
+            'access_token': token,
+            'token_type': 'Bearer',
+            'role': user.role,
+            'user_id': user.id
+        }), 200
 
-    # Create JWT token with user ID as identity (simple and clean)
-    # Additional user data is stored in additional_claims
-    token = create_access_token(
-        identity=str(user.id),
-        additional_claims={'role': user.role, 'username': user.username}
-    )
+    # Fallback: check dummy credentials if real login fails
+    dummy_users = {
+        "admin@hospital.com": {"password": "admin123", "role": "Admin"},
+        "doctor@hospital.com": {"password": "doc123", "role": "Doctor"},
+        "patient@hospital.com": {"password": "pat123", "role": "Patient"}
+    }
 
-    return jsonify({
-        'access_token': token,
-        'token_type': 'Bearer',
-        'role': user.role,
-        'user_id': user.id
-    }), 200
+    email = data.get('email')
+    password = data.get('password')
+
+    user = dummy_users.get(email)
+    if user and user["password"] == password:
+        # create a token for dummy user to be consistent with real users
+        token = create_access_token(
+            identity=f'dummy:{email}',
+            additional_claims={'role': user['role'], 'username': email.split('@')[0]}
+        )
+        return jsonify({
+            'access_token': token,
+            'token_type': 'Bearer',
+            'role': user['role'],
+            'user_id': None
+        }), 200
+
+    # If neither real nor dummy user matched, return invalid credentials
+    return jsonify({'msg': 'Invalid credentials'}), 401
+
 
 @auth_bp.route('/dashboard', methods=['GET'])
 @jwt_required()

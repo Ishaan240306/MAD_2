@@ -1,137 +1,158 @@
 <template>
   <div class="dashboard-container">
     <div class="header">
-      <h1>Admin Dashboard</h1>
+      <h1>{{ adminName }}'s Dashboard</h1>
+      <input type="text" placeholder="Search doctors, patients, departments..." class="search-bar" />
       <button @click="logout" class="logout-btn">Logout</button>
     </div>
 
-      <div class="action-buttons">
-        <button class="btn btn-primary" @click="openCreateModal">Create Doctor</button>
-      </div>
-
-    <div v-if="loading" class="loading">
-      Loading dashboard data...
+    <div class="action-buttons">
+      <button class="btn btn-primary" @click="openCreateModal">+ Create Doctor</button>
     </div>
 
-    <div v-else-if="error" class="error-message">
-      {{ error }}
+    <div v-if="loading" class="loading">Loading dashboard data...</div>
+    <div v-else-if="error" class="error-message">{{ error }}</div>
+
+    <div v-else>
+      <div class="dashboard-stats">
+        <div class="stat-card">
+          <h3>Total Patients</h3>
+          <p class="stat-number">{{ stats.patients }}</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total Doctors</h3>
+          <p class="stat-number">{{ stats.doctors }}</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total Appointments</h3>
+          <p class="stat-number">{{ stats.appointments }}</p>
+        </div>
+      </div>
+
+      <section class="dashboard-section">
+        <h2>Registered Doctors</h2>
+        <div class="entry-list">
+          <div v-for="doctor in doctors" :key="doctor.id" class="entry-card">
+            <p>{{ doctor.name }}</p>
+            <div class="actions">
+              <button @click="openEditModal(doctor)">Edit</button>
+              <button @click="openDeleteModal(doctor, 'Doctor')">Delete</button>
+              <button @click="openBlacklistModal(doctor, 'Doctor')">Blacklist</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-section">
+        <h2>Registered Patients</h2>
+        <div class="entry-list">
+          <div v-for="patient in patients" :key="patient.id" class="entry-card">
+            <p>{{ patient.name }}</p>
+            <div class="actions">
+              <button @click="openEditModal(patient)">Edit</button>
+              <button @click="openDeleteModal(patient, 'Patient')">Delete</button>
+              <button @click="openBlacklistModal(patient, 'Patient')">Blacklist</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-section">
+        <h2>Upcoming Appointments</h2>
+        <table class="appointments-table">
+          <thead>
+            <tr>
+              <th>Sr No.</th>
+              <th>Patient Name</th>
+              <th>Doctor Name</th>
+              <th>Department</th>
+              <th>Patient History</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="appt in appointments" :key="appt.id">
+              <td>{{ appt.id }}</td>
+              <td>{{ appt.patient }}</td>
+              <td>{{ appt.doctor }}</td>
+              <td>{{ appt.department }}</td>
+              <td><button class="view-button">View</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
     </div>
 
-    <div v-else class="dashboard-stats">
-      <div class="stat-card">
-        <h3>Total Patients</h3>
-        <p class="stat-number">{{ stats.patients }}</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>Total Doctors</h3>
-        <p class="stat-number">{{ stats.doctors }}</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>Total Appointments</h3>
-        <p class="stat-number">{{ stats.appointments }}</p>
-      </div>
-    </div>
-
-    <!-- Edit Doctor Modal -->
-    <EditDoctorModal
-      v-if="selectedDoctor"
-      :doctor="selectedDoctor"
-      @updated="fetchDashboardData"
-    />
-    <!-- Delete Confirmation Modal -->
-    <DeleteConfirmationModal
-      v-if="selectedEntity"
-      :entity="selectedEntity"
-      :role="selectedRole"
-      @deleted="fetchDashboardData"
-    />
-      <!-- Create Doctor Modal -->
-      <CreateDoctorModal
-        @created="fetchDashboardData"
-      />
+    <!-- Modals -->
+    <EditDoctorModal v-if="selectedDoctor" :doctor="selectedDoctor" @updated="fetchDashboardData" />
+    <DeleteConfirmationModal v-if="selectedEntity" :entity="selectedEntity" :role="selectedRole" @deleted="fetchDashboardData" />
+    <CreateDoctorModal @created="fetchDashboardData" />
   </div>
 </template>
 
 <script>
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-/* global bootstrap */
+import * as bootstrap from 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { getAuthHeaders, clearToken, getUserRole } from '../utils/tokenManager';
 import EditDoctorModal from './modals/EditDoctorModal.vue';
 import DeleteConfirmationModal from './modals/DeleteConfirmationModal.vue';
 import CreateDoctorModal from './modals/CreateDoctorModal.vue';
+
 export default {
   name: 'AdminDashboard',
   components: {
     EditDoctorModal,
     DeleteConfirmationModal,
-    CreateDoctorModal
+    CreateDoctorModal,
   },
   data() {
     return {
-      stats: {
-        patients: 0,
-        doctors: 0,
-        appointments: 0
-      },
+      adminName: 'Admin',
+      stats: { patients: 0, doctors: 0, appointments: 0 },
+      doctors: [],
+      patients: [],
+      appointments: [],
       loading: true,
       error: null,
       selectedDoctor: null,
       selectedEntity: null,
       selectedRole: null,
-      showBlacklistModal: false
     };
   },
   mounted() {
-    // Check if user is admin
     if (getUserRole() !== 'Admin') {
       this.error = 'Unauthorized: Admin access required';
       this.$router.push('/login');
       return;
     }
-
-    // Fetch dashboard data
     this.fetchDashboardData();
   },
   methods: {
     async fetchDashboardData() {
       this.loading = true;
       this.error = null;
-
       try {
-        // Get auth headers with JWT token
         const headers = getAuthHeaders();
-
-        // Make request to protected endpoint
         const response = await fetch('http://localhost:5000/dashboard', {
           method: 'GET',
-          headers: headers
+          headers,
         });
-
         if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error('Token expired or invalid. Please login again.');
-          } else if (response.status === 403) {
-            throw new Error('Unauthorized: Admin access required');
-          } else {
-            throw new Error('Failed to fetch dashboard data');
-          }
+          if (response.status === 401) throw new Error('Token expired or invalid. Please login again.');
+          if (response.status === 403) throw new Error('Unauthorized: Admin access required');
+          throw new Error('Failed to fetch dashboard data');
         }
-
-        // Parse and store stats
         const data = await response.json();
         this.stats = {
           patients: data.patients,
           doctors: data.doctors,
-          appointments: data.appointments
+          appointments: data.appointments,
         };
-
+        this.doctors = data.doctorList || [];
+        this.patients = data.patientList || [];
+        this.appointments = data.appointmentList || [];
       } catch (err) {
-        this.error = err.message || 'An error occurred while fetching dashboard data';
+        this.error = err.message || 'Error fetching dashboard data';
         console.error('Dashboard error:', err);
-
-        // If token is invalid, redirect to login
         if (err.message.includes('Token expired') || err.message.includes('invalid')) {
           setTimeout(() => {
             clearToken();
@@ -146,31 +167,28 @@ export default {
       clearToken();
       this.$router.push('/login');
     },
-    openEditModal(doctor) {
-      this.selectedDoctor = { ...doctor }; // clone to avoid direct mutation
+    openEditModal(entity) {
+      this.selectedDoctor = { ...entity };
       const modal = new bootstrap.Modal(document.getElementById('editDoctorModal'));
       modal.show();
-    }
-    ,
+    },
     openDeleteModal(entity, role) {
       this.selectedEntity = { ...entity };
       this.selectedRole = role;
       const modal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
       modal.show();
-    }
-    ,
+    },
     openBlacklistModal(entity, role) {
       this.selectedEntity = { ...entity };
       this.selectedRole = role;
       const modal = new bootstrap.Modal(document.getElementById('blacklistModal'));
       modal.show();
-    }
-      ,
-      openCreateModal() {
-        const modal = new bootstrap.Modal(document.getElementById('createDoctorModal'));
-        modal.show();
-      }
-  }
+    },
+    openCreateModal() {
+      const modal = new bootstrap.Modal(document.getElementById('createDoctorModal'));
+      modal.show();
+    },
+  },
 };
 </script>
 
@@ -179,20 +197,24 @@ export default {
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   margin-bottom: 30px;
   padding-bottom: 20px;
   border-bottom: 2px solid #007bff;
 }
 
-h1 {
-  color: #333;
-  margin: 0;
+.search-bar {
+  flex-grow: 1;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 
 .logout-btn {
@@ -212,8 +234,6 @@ h1 {
 
 .action-buttons {
   margin-bottom: 20px;
-  display: flex;
-  gap: 10px;
 }
 
 .action-buttons .btn {
@@ -243,39 +263,4 @@ h1 {
   margin-bottom: 20px;
   text-align: center;
 }
-
-.dashboard-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.stat-card {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.stat-card h3 {
-  color: #666;
-  margin-top: 0;
-  font-size: 14px;
-  text-transform: uppercase;
-}
-
-.stat-number {
-  color: #007bff;
-  font-size: 36px;
-  font-weight: bold;
-  margin: 10px 0 0 0;
-}
 </style>
-
