@@ -54,7 +54,7 @@ class Doctor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     specialization = db.Column(db.String(100), nullable=False)
-    availability = db.Column(db.Text)
+    availability = db.Column(db.String, nullable=True)
 
     # Relationship: One Doctor can have multiple Appointments
     appointments = db.relationship('Appointment', backref='doctor')

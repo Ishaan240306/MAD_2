@@ -1,11 +1,19 @@
 <template>
   <div class="dashboard-container">
     <div class="header">
-      <h1>{{ adminName }}'s Dashboard</h1>
-      <input type="text" placeholder="Search doctors, patients, departments..." class="search-bar" />
-      <button @click="logout" class="logout-btn">Logout</button>
-    </div>
+      <div class="header-left">
+        <h1>Admin Dashboard</h1>
+        <p class="welcome-text">Welcome {{ adminName }}</p>
+      </div>
 
+      <div class="header-right">
+        <div class="search-group">
+          <input type="text" v-model="searchQuery" placeholder="doctor, patient, department..." class="search-input" />
+          <button class="btn btn-search" @click="onSearch">Search</button>
+        </div>
+        <button @click="logout" class="logout-btn">Logout</button>
+      </div>
+    </div>
     <div class="action-buttons">
       <button class="btn btn-primary" @click="openCreateModal">+ Create Doctor</button>
     </div>
@@ -116,6 +124,8 @@ export default {
       selectedDoctor: null,
       selectedEntity: null,
       selectedRole: null,
+      searchQuery: '',
+
     };
   },
   mounted() {
@@ -127,6 +137,9 @@ export default {
     this.fetchDashboardData();
   },
   methods: {
+    onSearch() {
+      console.log('Searching for:', this.searchQuery);
+    },
     async fetchDashboardData() {
       this.loading = true;
       this.error = null;

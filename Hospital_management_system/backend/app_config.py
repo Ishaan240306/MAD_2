@@ -3,7 +3,7 @@ from models.models import db
 from flask_jwt_extended import JWTManager
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='Static', template_folder='Templates')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hospital.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
